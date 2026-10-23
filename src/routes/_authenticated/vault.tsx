@@ -117,7 +117,10 @@ function UploadDialog() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!file) return;
-    if (file.size > 10 * 1024 * 1024) return toast.error("File exceeds 10 MB limit");
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File exceeds 10 MB limit");
+      return;
+    }
     setBusy(true);
     try {
       await upload({

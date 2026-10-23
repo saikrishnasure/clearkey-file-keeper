@@ -72,7 +72,7 @@ function decode(b64: string) {
 }
 
 async function sha256(bytes: Uint8Array) {
-  const h = await crypto.subtle.digest("SHA-256", bytes);
+  const h = await crypto.subtle.digest("SHA-256", bytes as unknown as ArrayBuffer);
   return [...new Uint8Array(h)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
@@ -91,7 +91,7 @@ export const getMe = createServerFn({ method: "GET" })
 
 export const listDocuments = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((i: { q?: string; folder?: string }) => i)
+  .inputValidator((i: { q?: string; folder?: string | undefined }) => i)
   .handler(async ({ data, context }) => {
     const { data: perms } = await context.supabase
       .from("document_permissions")
@@ -207,13 +207,13 @@ export const downloadDocument = createServerFn({ method: "POST" })
 export const updateDocument = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (i: { id: string; title: string; description: string; folder: string; tags: string[]; file?: { fileName: string; mimeType: string; base64: string } }) => i,
+    (i: { id: string; title: string; description: string; folder: string; tags: string[]; file?: { fileName: string; mimeType: string; base64: string } | undefined }) => i,
   )
   .handler(async ({ data, context }) => {
     const ctx = context as Ctx;
     const doc = await requireDoc(ctx, data.id, "edit", "modify");
     const db = await admin();
-    const patch: Record<string, unknown> = {
+    const patch: any = {
       title: sanitizeText(data.title, 150) || doc.title,
       description: sanitizeText(data.description ?? "", 1000),
       folder: sanitizeText(data.folder ?? "", 60) || "General",
@@ -241,7 +241,7 @@ export const updateDocument = createServerFn({ method: "POST" })
     }
     const { error } = await db.from("documents").update(patch).eq("id", doc.id);
     if (error) throw new Error(error.message);
-    await audit(ctx, "modify", { documentId: doc.id, documentTitle: patch.title as string, details: { changes } });
+    await audit(ctx, "modify", { documentId: doc.id, documentTitle: patch["title"] as string, details: { changes } });
     return { ok: true };
   });
 
@@ -302,7 +302,7 @@ export const revokePermission = createServerFn({ method: "POST" })
 
 export const adminOverview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((i: { action?: string; deniedOnly?: boolean }) => i)
+  .inputValidator((i: { action?: string | undefined; deniedOnly?: boolean }) => i)
   .handler(async ({ data, context }) => {
     const ctx = context as Ctx;
     await requireRole(ctx, ["admin"], "admin_dashboard");
