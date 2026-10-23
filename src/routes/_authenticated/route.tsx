@@ -1,9 +1,8 @@
 import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
 import { ShieldCheck, FolderLock, LayoutDashboard, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { getMe } from "@/lib/vault.functions";
+import { useMe } from "@/hooks/use-me";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -14,10 +13,6 @@ export const Route = createFileRoute("/_authenticated")({
   component: Layout,
 });
 
-export function useMe() {
-  const fn = useServerFn(getMe);
-  return useQuery({ queryKey: ["me"], queryFn: () => fn() });
-}
 
 function Layout() {
   const { data: me } = useMe();

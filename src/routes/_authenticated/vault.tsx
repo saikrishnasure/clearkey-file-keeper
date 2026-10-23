@@ -6,7 +6,7 @@ import { FileText, Search, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { listDocuments, uploadDocument } from "@/lib/vault.functions";
 import { fileToBase64, formatBytes, ACCEPT, guessMime } from "@/lib/file-reader";
-import { useMe } from "./route";
+import { useMe } from "@/hooks/use-me";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

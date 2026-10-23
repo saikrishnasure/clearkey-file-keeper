@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ShieldCheck, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { adminOverview, verifyAuditChain, setUserRole } from "@/lib/vault.functions";
-import { useMe } from "./route";
+import { useMe } from "@/hooks/use-me";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
